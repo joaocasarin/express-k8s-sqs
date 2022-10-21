@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "es2016",
+        "lib": ["ESNext"],
+        "module": "commonjs",
+        "baseUrl": "./",
+        "paths": {
+            "@app": ["src/app.ts"],
+            "@configs/*": ["src/configs/*"],
+            "@controllers/*": ["src/controllers/*"],
+            "@database": ["src/database/client.ts"],
+            "@errors/*": ["src/errors/*"],
+            "@interfaces/*": ["src/interfaces/*"],
+            "@middlewares/*": ["src/middlewares/*"],
+            "@routes/*": ["src/routes/*"],
+            "@routes": ["src/routes/index.ts"],
+            "@services/*": ["src/services/*"],
+            "@utils/*": ["src/utils/*"],
+            "@tests/*": ["__tests__/*"]
+        },
+        "sourceMap": true,
+        "outDir": "dist",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "resolveJsonModule": true
+    },
+    "include": ["src", "__tests__"],
+    "exclude": ["node_modules", "prisma"]
+}

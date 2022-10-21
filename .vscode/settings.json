@@ -1,0 +1,14 @@
+{
+    "files.eol": "\n",
+    "files.exclude": {
+        "**/.git": false
+    },
+    "eslint.validate": ["javascript", "typescript"],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[prisma]": {
+        "editor.defaultFormatter": "Prisma.prisma"
+    },
+    "editor.formatOnSave": true,
+    "docwriter.progress.trackMethods": false,
+    "docwriter.progress.trackFunctions": false
+}

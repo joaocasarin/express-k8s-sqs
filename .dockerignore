@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.vscode/
+.husky/
+.github/
+
+.env
+.env.test
+.env.example

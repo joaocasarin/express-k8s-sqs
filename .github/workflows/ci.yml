@@ -1,0 +1,60 @@
+name: CI
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+            - development
+
+jobs:
+    ci:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [16.15.0]
+
+        steps:
+            - uses: actions/checkout@v2.5.0
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3.5.1
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Install dependencies
+              uses: bahmutov/npm-install@v1.8.23
+              with:
+                  install-command: yarn install --frozen-lockfile
+
+            - name: Check Typescript syntax
+              run: yarn prebuild
+
+            - name: Check ESLint
+              run: yarn lint
+
+            - name: Check Prettier
+              run: yarn prettier --check .
+
+            - name: Start services
+              uses: isbang/compose-action@v1.3.2
+              with:
+                  down-flags: '--volumes'
+              env:
+                  POSTGRES_USER: joao
+                  POSTGRES_PASSWORD: 123
+                  POSTGRES_PORT: 5432
+                  PGADMIN_EMAIL: joao@dev.com
+                  PGADMIN_PASSWORD: 123
+                  PGADMIN_PORT: 5433
+
+            - name: Run Automated Tests
+              env:
+                  DATABASE_URL: postgresql://joao:123@localhost:5432/test?schema=public
+              run: yarn ci
+
+            - name: Upload coverage to Coveralls
+              uses: coverallsapp/github-action@1.1.3
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
