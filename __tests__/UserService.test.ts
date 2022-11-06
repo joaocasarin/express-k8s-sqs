@@ -2,6 +2,7 @@ import UserService from '@services/UserService';
 import { compare } from 'bcryptjs';
 import prisma from '@database';
 import { User } from '@interfaces/User';
+import HttpError from '@errors/Http';
 
 describe('Testing the UserService methods', () => {
     // Clear the database before all tests
@@ -46,6 +47,16 @@ describe('Testing the UserService methods', () => {
         expect(result?.name).toEqual(user.name);
         expect(result?.email).toEqual(user.email);
         expect(hashedPassword).toBeTruthy();
+    });
+
+    test('should throw error when getting non-existent user', async () => {
+        const result = UserService.getUserById(1);
+
+        await expect(result).rejects.toThrow(
+            HttpError.notFound(
+                'GetUserByIdService: User with id {1} not found.'
+            )
+        );
     });
 
     test('should get all users', async () => {
@@ -109,6 +120,14 @@ describe('Testing the UserService methods', () => {
         expect(hashedPassword).toBeTruthy();
     });
 
+    test('should throw error when updating non-existent user', async () => {
+        const result = UserService.updateUser({ id: 1, data: {} });
+
+        await expect(result).rejects.toThrow(
+            HttpError.notFound('UpdateUserService: User with id {1} not found.')
+        );
+    });
+
     test('should delete user', async () => {
         const user: User = {
             name: 'John Doe',
@@ -118,12 +137,23 @@ describe('Testing the UserService methods', () => {
 
         const { id } = await UserService.createUser(user);
 
-        await UserService.deleteUser(id);
+        const deletedUser = await UserService.deleteUser(id);
+        const isPasswordValid = await compare(
+            user.password,
+            deletedUser.password
+        );
 
-        const result = UserService.getUserById(id);
+        expect(deletedUser?.id).toEqual(1);
+        expect(deletedUser?.name).toEqual(user.name);
+        expect(deletedUser?.email).toEqual(user.email);
+        expect(isPasswordValid).toBeTruthy();
+    });
+
+    test('should not delete non-existent user', async () => {
+        const result = UserService.deleteUser(1);
 
         await expect(result).rejects.toThrow(
-            new Error(`GetUserByIdService: User with id {${id}} not found.`)
+            HttpError.notFound(`DeleteUserService: User with id {1} not found.`)
         );
     });
 });

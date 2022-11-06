@@ -1,6 +1,7 @@
 import prisma from '@database';
 import { hash } from 'bcryptjs';
 import { User, UserResponse } from '@interfaces/User';
+import HttpError from '@errors/Http';
 
 export interface UpdateUserParams {
     id: number;
@@ -8,24 +9,6 @@ export interface UpdateUserParams {
 }
 
 class UserService {
-    public async getUserById(id: number): Promise<UserResponse> {
-        const user = await prisma.user.findFirst({ where: { id } });
-
-        if (!user) {
-            throw new Error(
-                `GetUserByIdService: User with id {${id}} not found.`
-            );
-        }
-
-        return user;
-    }
-
-    public async getUsers(): Promise<UserResponse[]> {
-        const users = await prisma.user.findMany();
-
-        return users;
-    }
-
     public async createUser({
         name,
         email,
@@ -44,6 +27,24 @@ class UserService {
         return user;
     }
 
+    public async getUserById(id: number): Promise<UserResponse> {
+        const user = await prisma.user.findFirst({ where: { id } });
+
+        if (!user) {
+            throw HttpError.notFound(
+                `GetUserByIdService: User with id {${id}} not found.`
+            );
+        }
+
+        return user;
+    }
+
+    public async getUsers(): Promise<UserResponse[]> {
+        const users = await prisma.user.findMany();
+
+        return users;
+    }
+
     public async updateUser({
         id,
         data
@@ -60,7 +61,7 @@ class UserService {
 
             return updatedUser;
         } catch (error) {
-            throw new Error(
+            throw HttpError.notFound(
                 `UpdateUserService: User with id {${id}} not found.`
             );
         }
@@ -76,7 +77,7 @@ class UserService {
 
             return deletedUser;
         } catch (error) {
-            throw new Error(
+            throw HttpError.notFound(
                 `DeleteUserService: User with id {${id}} not found.`
             );
         }

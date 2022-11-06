@@ -1,4 +1,5 @@
 import Logger from '@configs/logger';
+import HttpError from '@errors/Http';
 import { User } from '@interfaces/User';
 import { Prisma } from '@prisma/client';
 import UserService from '@services/UserService';
@@ -10,7 +11,9 @@ class UserController {
             const { id } = req.params as { id: string };
 
             if (!id) {
-                throw new Error('GetUserByIdController: Missing id param.');
+                throw HttpError.notFound(
+                    'GetUserByIdController: Missing id param.'
+                );
             }
 
             const user = await UserService.getUserById(Number(id));
@@ -44,13 +47,20 @@ class UserController {
             password: string;
         };
 
-        if (!name) throw new Error('CreateUserController: Missing name param.');
+        if (!name)
+            throw HttpError.badRequest(
+                'CreateUserController: Missing name param.'
+            );
 
         if (!email)
-            throw new Error('CreateUserController: Missing email param.');
+            throw HttpError.badRequest(
+                'CreateUserController: Missing email param.'
+            );
 
         if (!password)
-            throw new Error('CreateUserController: Missing password param.');
+            throw HttpError.badRequest(
+                'CreateUserController: Missing password param.'
+            );
 
         try {
             const user = await UserService.createUser({
@@ -79,17 +89,21 @@ class UserController {
             const data = req.body as User;
 
             if (!id) {
-                throw new Error('UpdateUserController: Missing user id.');
+                throw HttpError.notFound(
+                    'UpdateUserController: Missing user id.'
+                );
             }
 
             if (Number.isNaN(Number(id))) {
-                throw new Error(
+                throw HttpError.notFound(
                     `UpdateUserController: Invalid user id. Id: ${id}`
                 );
             }
 
             if (!data) {
-                throw new Error('UpdateUserController: Missing user data.');
+                throw HttpError.notFound(
+                    'UpdateUserController: Missing user data.'
+                );
             }
 
             const newUser = await UserService.updateUser({
@@ -111,11 +125,13 @@ class UserController {
             const { id } = req.params as { id: string };
 
             if (!id) {
-                throw new Error('DeleteUserController: Missing user id.');
+                throw HttpError.notFound(
+                    'DeleteUserController: Missing user id.'
+                );
             }
 
             if (Number.isNaN(Number(id))) {
-                throw new Error(
+                throw HttpError.notFound(
                     `DeleteUserController: Invalid user id. ID: ${id}`
                 );
             }

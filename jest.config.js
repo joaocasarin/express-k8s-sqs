@@ -15,6 +15,11 @@ module.exports = {
     coveragePathIgnorePatterns: [
         '/node_modules/',
         '/dist/',
+        '/src/configs/',
+        '/src/database/',
+        '/src/errors/',
+        '/src/interface/',
+        '/src/routes/',
         '/src/swagger/',
         '.prettierrc.js',
         '.eslintrc.js',
